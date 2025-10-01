@@ -13,17 +13,9 @@ if (!process.env.TEST_USERNAME || !process.env.ANOTHER_USERNAME) {
 
   process.env.TEST_USERNAME = testUsername;
   process.env.ANOTHER_USERNAME = anotherUsername;
-  console.log("[SETUP] Usernames generated:", {
-    testUsername,
-    anotherUsername,
-  });
 } else {
   testUsername = process.env.TEST_USERNAME;
   anotherUsername = process.env.ANOTHER_USERNAME;
-  console.log("[SETUP] Using existing usernames:", {
-    testUsername,
-    anotherUsername,
-  });
 }
 
 setup("authenticate as testuser", async ({ page }) => {
