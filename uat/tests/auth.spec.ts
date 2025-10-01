@@ -8,7 +8,7 @@ const testUsername = getTestUsername();
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe("Authentication error cases", () => {
-  test.only("should show error when trying to register with existing username", async ({
+  test("should show error when trying to register with existing username", async ({
     page,
   }) => {
     console.log(`[TEST] Using username: ${testUsername}`);
