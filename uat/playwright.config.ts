@@ -11,22 +11,31 @@ const config: PlaywrightTestConfig = {
   retries: 0,
   workers: 1,
   reporter: [["html", { open: "never" }]],
+  // Global setup runs once before all tests to generate shared usernames
+  globalSetup: require.resolve("./global-setup"),
   use: {
     actionTimeout: 0,
     trace: "on-first-retry",
   },
   projects: [
+    // Setup project
+    {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
       },
+      dependencies: ["setup"],
     },
   ],
   webServer: {
     command: "npm run dev",
     port: 3000,
     cwd: process.env.WEB_APP_PATH,
+    reuseExistingServer: true,
   },
 };
 

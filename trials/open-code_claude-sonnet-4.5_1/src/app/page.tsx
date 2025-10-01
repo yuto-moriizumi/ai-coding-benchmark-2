@@ -1,103 +1,105 @@
-import Image from "next/image";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+async function resetData() {
+  "use server";
+  await prisma.comment.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Clear session
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.delete("userId");
+
+  revalidatePath("/");
+}
+
+async function logout() {
+  "use server";
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.delete("userId");
+  revalidatePath("/");
+}
+
+export default async function Home() {
+  const posts = await prisma.post.findMany({
+    include: {
+      author: {
+        select: { username: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const user = await getCurrentUser();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen p-8">
+      <header className="max-w-4xl mx-auto mb-8 flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Blog</h1>
+        <div className="flex gap-4 items-center">
+          {user ? (
+            <>
+              <span>Hello, {user.username}</span>
+              <form action={logout}>
+                <button type="submit" className="text-blue-600 hover:underline">
+                  Logout
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/register" className="text-blue-600 hover:underline">
+                Register
+              </Link>
+              <Link href="/login" className="text-blue-600 hover:underline">
+                Login
+              </Link>
+            </>
+          )}
+        </div>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main className="max-w-4xl mx-auto">
+        <div className="mb-6 flex gap-4">
+          <Link
+            href="/new-post"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Add new article
+          </Link>
+          <form action={resetData}>
+            <button
+              type="submit"
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Reset data
+            </button>
+          </form>
+        </div>
+
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <article key={post.id}>
+              <Link
+                href={`/posts/${post.id}`}
+                className="block p-4 border rounded hover:bg-gray-50"
+              >
+                <h2 className="text-xl font-semibold">{post.title}</h2>
+                <p className="text-gray-600 text-sm">
+                  By {post.author.username}
+                </p>
+              </Link>
+            </article>
+          ))}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
