@@ -9,7 +9,6 @@ const config: PlaywrightTestConfig = {
   },
   fullyParallel: true,
   retries: 0,
-  workers: 1,
   reporter: [["html", { open: "never" }]],
   use: {
     actionTimeout: 0,
