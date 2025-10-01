@@ -1,14 +1,30 @@
 import { test as setup, expect } from "@playwright/test";
-import {
-  TESTUSER_FILE,
-  ANOTHERUSER_FILE,
-  getTestUsername,
-  getAnotherUsername,
-} from "./constants";
+import { TESTUSER_FILE, ANOTHERUSER_FILE } from "./constants";
 
-// Get usernames from environment variables set in global setup
-const testUsername = getTestUsername();
-const anotherUsername = getAnotherUsername();
+// Generate usernames once and store in environment variables
+// Check if already generated to avoid regeneration
+let testUsername: string;
+let anotherUsername: string;
+
+if (!process.env.TEST_USERNAME || !process.env.ANOTHER_USERNAME) {
+  const timestamp = Date.now();
+  testUsername = `testuser_${timestamp}`;
+  anotherUsername = `anotheruser_${timestamp}`;
+
+  process.env.TEST_USERNAME = testUsername;
+  process.env.ANOTHER_USERNAME = anotherUsername;
+  console.log("[SETUP] Usernames generated:", {
+    testUsername,
+    anotherUsername,
+  });
+} else {
+  testUsername = process.env.TEST_USERNAME;
+  anotherUsername = process.env.ANOTHER_USERNAME;
+  console.log("[SETUP] Using existing usernames:", {
+    testUsername,
+    anotherUsername,
+  });
+}
 
 setup("authenticate as testuser", async ({ page }) => {
   // トップページにアクセス
