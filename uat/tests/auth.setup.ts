@@ -1,8 +1,14 @@
 import { test as setup, expect } from "@playwright/test";
-import { TESTUSER_FILE, ANOTHERUSER_FILE, loadUsernames } from "./constants";
+import {
+  TESTUSER_FILE,
+  ANOTHERUSER_FILE,
+  getTestUsername,
+  getAnotherUsername,
+} from "./constants";
 
-// Load usernames that were generated in global setup
-const { testUsername, anotherUsername } = loadUsernames();
+// Get usernames from environment variables set in global setup
+const testUsername = getTestUsername();
+const anotherUsername = getAnotherUsername();
 
 setup("authenticate as testuser", async ({ page }) => {
   // トップページにアクセス

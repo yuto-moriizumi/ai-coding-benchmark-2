@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { loadUsernames } from "./constants";
+import { getTestUsername } from "./constants";
 
-// Load usernames that were generated during setup
-const { testUsername } = loadUsernames();
+// Get username from environment variable set in global setup
+const testUsername = getTestUsername();
 
 // Reset storage state for this file to avoid being authenticated
 test.use({ storageState: { cookies: [], origins: [] } });

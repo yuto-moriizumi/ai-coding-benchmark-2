@@ -1,5 +1,4 @@
 import path from "path";
-import fs from "fs";
 
 export const TESTUSER_FILE = path.join(
   __dirname,
@@ -10,43 +9,23 @@ export const ANOTHERUSER_FILE = path.join(
   "../playwright/.auth/anotheruser.json"
 );
 
-// File to store usernames generated during setup
-const USERNAMES_FILE = path.join(
-  __dirname,
-  "../playwright/.auth/usernames.json"
-);
-
-// Generate unique usernames for testing
-export function generateUsernames() {
-  const timestamp = Date.now();
-  return {
-    testUsername: `testuser_${timestamp}`,
-    anotherUsername: `anotheruser_${timestamp}`,
-  };
-}
-
-// Save usernames to file (called during setup)
-export function saveUsernames(usernames: {
-  testUsername: string;
-  anotherUsername: string;
-}) {
-  const dir = path.dirname(USERNAMES_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  fs.writeFileSync(USERNAMES_FILE, JSON.stringify(usernames, null, 2));
-}
-
-// Load usernames from file (called during tests)
-export function loadUsernames(): {
-  testUsername: string;
-  anotherUsername: string;
-} {
-  if (!fs.existsSync(USERNAMES_FILE)) {
+// Get usernames from environment variables (set in global setup)
+export function getTestUsername(): string {
+  const username = process.env.TEST_USERNAME;
+  if (!username) {
     throw new Error(
-      `Usernames file not found at ${USERNAMES_FILE}. Make sure setup tests have run.`
+      "TEST_USERNAME environment variable not found. Make sure global setup has run."
     );
   }
-  const content = fs.readFileSync(USERNAMES_FILE, "utf-8");
-  return JSON.parse(content);
+  return username;
+}
+
+export function getAnotherUsername(): string {
+  const username = process.env.ANOTHER_USERNAME;
+  if (!username) {
+    throw new Error(
+      "ANOTHER_USERNAME environment variable not found. Make sure global setup has run."
+    );
+  }
+  return username;
 }
