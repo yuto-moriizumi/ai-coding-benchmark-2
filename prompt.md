@@ -17,3 +17,4 @@
 - Don't modify tests or test configuration. These files are stored in `uat` folder.
 - Don't use `killall`
 - Don't read other folders in `trials` except for the given one
+- Don't stop until confirming UAT passes
