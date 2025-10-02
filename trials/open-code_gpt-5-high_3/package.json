@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "prisma db push && next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "next": "15.5.4",
+    "@prisma/client": "5.22.0"
   },
   "devDependencies": {
     "typescript": "^5",
@@ -22,6 +24,7 @@
     "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "@eslint/eslintrc": "^3",
+    "prisma": "5.22.0"
   }
 }

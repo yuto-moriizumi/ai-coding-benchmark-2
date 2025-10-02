@@ -27,7 +27,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <header className="p-4 border-b flex gap-4">
+          <a href="/">Home</a>
+          <a href="/new-post">Add new article</a>
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+          <a href="/logout">Logout</a>
+        </header>
+        <main className="p-4 max-w-3xl mx-auto">{children}</main>
       </body>
     </html>
   );
