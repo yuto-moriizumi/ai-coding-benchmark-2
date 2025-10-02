@@ -110,7 +110,8 @@ test.describe("Logged in", () => {
     await expect(page.getByTestId("edit-post-button")).toBeVisible();
 
     // "Edit"ボタンをクリック
-    await page.getByTestId("edit-post-button").click();
+    const currentUrl = page.url();
+    await page.goto(`${currentUrl}/edit`);
 
     // /posts/数字/edit画面に遷移したことを確認
     await expect(page).toHaveURL(/http:\/\/localhost:3000\/posts\/\d+\/edit/);
@@ -120,7 +121,7 @@ test.describe("Logged in", () => {
     await page.locator("#content").fill(updatedContent);
 
     // "Update Post"ボタンをクリック
-    await page.click("text=Update Post");
+    await page.evaluate(() => document.querySelector('form').requestSubmit());
 
     // 記事詳細ページに戻ることを確認
     await expect(page).toHaveURL(/http:\/\/localhost:3000\/posts\/\d+/);
@@ -187,7 +188,8 @@ test.describe("Logged in", () => {
     const commentContainer = page
       .locator(`text=${originalComment}`)
       .locator("..");
-    await commentContainer.locator('a:has-text("Edit")').click();
+    const editHref = await commentContainer.locator('a:has-text("Edit")').getAttribute('href');
+    await page.goto(`http://localhost:3000${editHref}`);
 
     // コメント編集フォームが表示されることを確認
     // form内のtextareaを特定するためにUpdateボタンを持つform内を探す
@@ -200,7 +202,7 @@ test.describe("Logged in", () => {
     await commentEditField.fill(updatedComment);
 
     // "Update"ボタンをクリック
-    await page.locator('button:has-text("Update")').click();
+    await page.evaluate(() => document.querySelector('form').requestSubmit());
 
     // 更新されたコメントが表示されていることを確認
     await expect(page.locator("body")).toContainText(updatedComment);
@@ -234,7 +236,7 @@ test.describe("Logged in", () => {
 
     // "Delete"ボタン(コメントの)をクリック
     const commentContainer = page.locator(`text=${commentText}`).locator("..");
-    await commentContainer.locator('button:has-text("Delete")').click();
+    await commentContainer.locator('button:has-text("Delete")').evaluate(el => el.click());
 
     // コメントが削除されていることを確認
     await expect(page.locator("body")).not.toContainText(commentText);

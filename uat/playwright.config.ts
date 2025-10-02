@@ -24,15 +24,21 @@ const config: PlaywrightTestConfig = {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
+        env: {
+          NEXT_PUBLIC_DISABLE_DEV_OVERLAY: '1',
+        },
       },
       dependencies: ["setup"],
     },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "NEXT_PUBLIC_DISABLE_DEV_OVERLAY=1 npm run dev",
     port: 3000,
     cwd: process.env.WEB_APP_PATH,
     reuseExistingServer: true,
+    env: {
+      NEXT_PUBLIC_DISABLE_DEV_OVERLAY: '1',
+    },
   },
 };
 
