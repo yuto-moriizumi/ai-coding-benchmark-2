@@ -5,7 +5,7 @@
 - Data must be stored in sqlight as file
 - Use nextjs, typescript, prisma
 - UAT must pass
-  - Run your UAT with `WEB_APP_PATH=[path to your nextjs app] npm test`
+  - Run your UAT with `WEB_APP_PATH=[absolute path to your nextjs app] npm test`
   - Refer to `uat/tests/*.spec.ts` for requirement details
   - Don't start app with `npm run dev` or `npm start` as UAT will automatically start the app
 - Implement minimum features to pass UAT
