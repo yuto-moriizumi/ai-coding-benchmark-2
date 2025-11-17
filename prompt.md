@@ -18,3 +18,4 @@
 - Don't use `killall`
 - Don't read other folders in `trials` except for the given one
 - Don't stop until confirming UAT passes
+- Don't use `git commit` command
